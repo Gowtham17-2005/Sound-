@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Hearing - Spy Mic</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding: 20px; }
+        .container { border: 2px solid #333; padding: 30px; border-radius: 15px; background: #1e1e1e; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 50px; border: none; background: #007bff; color: white; font-weight: bold; }
+        button:disabled { background: #555; }
+        .controls { margin-top: 30px; }
+        input[type=range] { width: 80%; margin: 20px 0; }
+        .warning { color: #ff4444; font-size: 14px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Super Hearing Mic</h2>
+        <p>Headphones potta mattum dhaan work aagum!</p>
+        
+        <button id="startBtn">ON / START</button>
+        <button id="stopBtn" disabled>OFF / STOP</button>
+
+        <div class="controls">
+            <label>Master Volume (Boost): <span id="volVal">5</span>x</label><br>
+            <input type="range" id="masterGain" min="1" max="20" value="5" step="1">
+            
+            <br>
+            <label>Voice Sensitivity: <span id="sensVal">15</span>dB</label><br>
+            <input type="range" id="voiceBoost" min="0" max="30" value="15">
+        </div>
+
+        <p class="warning">Warning: Feedback vara vaaippu irukku. Volume-ah step-by-step-ah increase pannunga.</p>
+    </div>
+
+    <script>
+        let audioCtx, source, hpFilter, voiceBoostNode, compressor, masterGainNode, stream;
+
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const masterSlider = document.getElementById('masterGain');
+        const voiceSlider = document.getElementById('voiceBoost');
+
+        startBtn.onclick = async () => {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: true
+                    } 
+                });
+
+                source = audioCtx.createMediaStreamSource(stream);
+
+                // 1. High-Pass Filter (Background hum cut panna)
+                hpFilter = audioCtx.createBiquadFilter();
+                hpFilter.type = "highpass";
+                hpFilter.frequency.value = 400; 
+
+                // 2. Peaking Filter (Voice frequency boost)
+                voiceBoostNode = audioCtx.createBiquadFilter();
+                voiceBoostNode.type = "peaking";
+                voiceBoostNode.frequency.value = 2500; 
+                voiceBoostNode.gain.value = voiceSlider.value;
+
+                // 3. Dynamics Compressor (Sudden loud sound-ah control panna)
+                compressor = audioCtx.createDynamicsCompressor();
+                compressor.threshold.setValueAtTime(-20, audioCtx.currentTime);
+                compressor.knee.setValueAtTime(30, audioCtx.currentTime);
+
+                // 4. Master Gain
+                masterGainNode = audioCtx.createGain();
+                masterGainNode.gain.value = masterSlider.value;
+
+                // Connections
+                source.connect(hpFilter);
+                hpFilter.connect(voiceBoostNode);
+                voiceBoostNode.connect(compressor);
+                compressor.connect(masterGainNode);
+                masterGainNode.connect(audioCtx.destination);
+
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                console.log("Listening...");
+
+            } catch (err) {
+                alert("Mic permission venum bro: " + err);
+            }
+        };
+
+        stopBtn.onclick = () => {
+            stream.getTracks().forEach(track => track.stop());
+            audioCtx.close();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        };
+
+        // Real-time control updates
+        masterSlider.oninput = () => {
+            if(masterGainNode) masterGainNode.gain.value = masterSlider.value;
+            document.getElementById('volVal').innerText = masterSlider.value;
+        };
+
+        voiceSlider.oninput = () => {
+            if(voiceBoostNode) voiceBoostNode.gain.value = voiceSlider.value;
+            document.getElementById('sensVal').innerText = voiceSlider.value;
+        };
+    </script>
+</body>
+</html>
