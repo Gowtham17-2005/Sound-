@@ -1,0 +1,34 @@
+Using Python, OpenCV, MediaPipe Face Mesh, and YOLOv8-tiny, build a real-time Driver Monitoring System with the following features:
+
+1. Gaze Tracking (Driver Attention):
+
+- Detect facial landmarks using MediaPipe Face Mesh.
+- Extract eye landmarks and iris positions.
+- Calculate a "Gaze Ratio" based on iris position relative to left and right eye corners.
+- Determine gaze direction (left, right, center).
+- If the driver looks away from the center for more than 3 seconds, trigger an alert.
+- Display "INATTENTIVE DRIVER" warning on the video frame.
+
+2. Distraction Detection (Phone & Smoking):
+
+- Use YOLOv8-tiny to detect objects: "cell phone" and "cigarette".
+- Detect the driver using a person bounding box.
+- Restrict object detection within the driver's bounding box only.
+- If a phone or cigarette is detected continuously for more than 2 seconds:
+  - Display a red "DISTRACTION ALERT" overlay on the frame.
+- Show bounding boxes for detected objects.
+
+3. Heart Rate Monitoring (rPPG):
+
+- Use MediaPipe Face Mesh to isolate the forehead region (ROI).
+- Extract mean Green channel values from the ROI across frames.
+- Store signal values in a rolling buffer.
+- Apply a bandpass filter (0.75 Hz to 4 Hz).
+- Perform Fast Fourier Transform (FFT) to estimate heart rate (BPM).
+- Display live BPM on the video frame.
+
+Constraints:
+
+- Integrate all features into a single OpenCV video capture loop.
+- Ensure real-time performance.
+- Use modular and well-structured code.
