@@ -1,34 +1,103 @@
-Using Python, OpenCV, MediaPipe Face Mesh, and YOLOv8-tiny, build a real-time Driver Monitoring System with the following features:
+Improve and enhance my Python-based Driver Monitoring System built using OpenCV, MediaPipe Face Mesh, and YOLOv8-tiny with high accuracy and an advanced voice alert system.
 
-1. Gaze Tracking (Driver Attention):
+Apply the following improvements:
 
-- Detect facial landmarks using MediaPipe Face Mesh.
-- Extract eye landmarks and iris positions.
-- Calculate a "Gaze Ratio" based on iris position relative to left and right eye corners.
-- Determine gaze direction (left, right, center).
-- If the driver looks away from the center for more than 3 seconds, trigger an alert.
-- Display "INATTENTIVE DRIVER" warning on the video frame.
+1. Eye Blink Detection:
 
-2. Distraction Detection (Phone & Smoking):
+- Use Eye Aspect Ratio (EAR) instead of simple eye closure.
+- Apply temporal smoothing (moving average or exponential smoothing).
+- Detect blink only if EAR drops below threshold and recovers within 100–400 ms.
+- Differentiate between normal blink and long eye closure (drowsiness).
+- Use both eyes and average EAR.
+- Implement dynamic threshold calibration per user.
 
-- Use YOLOv8-tiny to detect objects: "cell phone" and "cigarette".
-- Detect the driver using a person bounding box.
-- Restrict object detection within the driver's bounding box only.
-- If a phone or cigarette is detected continuously for more than 2 seconds:
-  - Display a red "DISTRACTION ALERT" overlay on the frame.
-- Show bounding boxes for detected objects.
+2. Yawn Detection:
 
-3. Heart Rate Monitoring (rPPG):
+- Use Mouth Aspect Ratio (MAR).
+- Detect yawning only if mouth remains open for more than 1.5–2 seconds.
+- Add jaw velocity analysis:
+  - Fast motion → talking
+  - Slow wide opening → yawning
+- Ensure face is forward-facing using head pose estimation.
 
-- Use MediaPipe Face Mesh to isolate the forehead region (ROI).
-- Extract mean Green channel values from the ROI across frames.
-- Store signal values in a rolling buffer.
-- Apply a bandpass filter (0.75 Hz to 4 Hz).
-- Perform Fast Fourier Transform (FFT) to estimate heart rate (BPM).
-- Display live BPM on the video frame.
+3. Gaze Tracking:
 
-Constraints:
+- Smooth iris movement using moving average or Kalman filter.
+- Normalize gaze relative to eye width.
+- Use a 3-second rolling window.
+- Trigger alert only if gaze is off-center in more than 70% of frames.
 
-- Integrate all features into a single OpenCV video capture loop.
-- Ensure real-time performance.
-- Use modular and well-structured code.
+4. Distraction Detection:
+
+- Use YOLOv8-tiny to detect "cell phone" and "cigarette".
+- Restrict detection to driver ROI.
+- Tune confidence threshold (0.4–0.6).
+- Use object tracking (SORT/DeepSORT) for persistence.
+- Trigger alert only if detected continuously for more than 2 seconds.
+
+5. Heart Rate Monitoring (rPPG):
+
+- Use forehead ROI only.
+- Apply detrending and z-score normalization.
+- Use bandpass filter (0.75–4 Hz).
+- Apply smoothing and FFT for BPM estimation.
+- Maintain 10–15 sec buffer before output.
+- Reject noisy signals using signal quality checks.
+- Optionally use ICA for noise separation.
+
+6. Multi-Feature Risk Fusion:
+
+- Combine:
+  - Blink rate
+  - Eye closure duration
+  - Yawning duration
+  - Gaze deviation
+  - Distraction detection
+  - Heart rate abnormality
+- Generate a Risk Score (0–100%).
+- Trigger alerts only when risk exceeds 80%.
+
+7. Time-Based Filtering:
+
+- Blink: 100–400 ms
+- Eye closure: >1.5 sec
+- Yawn: >1.5–2 sec
+- Gaze away: >3 sec
+- Distraction: >2 sec
+
+8. Lighting & Stability:
+
+- Apply CLAHE (adaptive histogram equalization).
+- Stabilize face ROI across frames.
+- Ignore low-confidence detections.
+
+9. Performance Optimization:
+
+- Use frame skipping (every 2–3 frames).
+- Separate detection and tracking.
+- Maintain real-time FPS.
+
+10. Calibration:
+
+- Add 5–10 sec initial calibration phase.
+- Dynamically adjust EAR, MAR, gaze thresholds.
+
+11. Advanced Voice Alert System:
+
+- Use pyttsx3 or gTTS for voice output.
+- Trigger voice alert when Risk Score > 80%.
+- Default message:
+  "Warning: Driver is drowsy. Please take a break."
+- Support multi-language:
+  - English
+  - Tamil
+- Add toggle option to switch language at runtime.
+- Ensure non-blocking audio using threading or async playback.
+- Implement cooldown (e.g., alert only once every 10–15 seconds).
+- Add priority-based alerts:
+  - Medium Risk → soft warning tone
+  - High Risk → full voice alert
+- Prevent repeated overlapping audio.
+- Optionally adjust volume and speech rate dynamically.
+
+Ensure the system is modular, efficient, real-time, and minimizes false positives while maintaining high reliability in real driving conditions.
