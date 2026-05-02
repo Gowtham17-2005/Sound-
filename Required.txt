@@ -1,22 +1,25 @@
-Role: Act as a Senior Full-Stack Developer.
-Project: Turf Slot Booking Mobile App (React Native + Node.js).
-​Task: Generate a production-ready starter code for a Turf Booking System with a high-end UI.
-​1. Backend (Node.js & MongoDB):
-​Create a server.js with Express.
-​Define Mongoose Schemas for:
-​User: (Name, Email, Phone, Password).
-​Turf: (Name, Location, PricePerHour, ImageURL).
-​Booking: (User ID, Turf ID, Date, TimeSlot, Status).
-​Create an API endpoint POST /book that checks if a slot is already booked for that date and turf before saving.
-​Create an API endpoint GET /slots/:turfId/:date to return available time slots.
-​2. Frontend (React Native - Expo):
-​Create a modern HomeScreen using FlatList to show available turfs in cards.
-​Create a BookingScreen with:
-​A Date Picker (or Calendar).
-​A Time Slot Grid (e.g., 6 AM to 11 PM) where booked slots are disabled/red and available slots are clickable/green.
-​Use Axios for API calls.
-​3. Style Preference:
-​Use a "Midnight Sports" theme: Dark background (#121212), Neon Green accents (#39FF14), and White text.
-​4. Output: > - Provide the code for server.js, models.js, and the main React Native components.
-​List all npm install commands for both backend and frontend.
-​Explain how to run both simultaneously.
+Role: Expert Full-Stack Developer (Node.js & React Native).
+Objective: Create a complete "Turf Slot Booking" application with a RedBus-style clean UI.
+Task 1: Backend (Node.js/Express & MongoDB)
+Create a server.js using Express.
+Models: >   - User: Name, Phone, Password.
+Turf: Name, Location, Price (e.g., ₹800/hr), Rating, ImageURL.
+Booking: UserID, TurfID, Date, TimeSlot (e.g., "18:00 - 19:00"), PaymentStatus.
+APIs: >   - GET /api/turfs: To list all turfs.
+POST /api/check-availability: To check if a specific slot is taken for a given date.
+POST /api/book: To save a booking (Must prevent double-booking).
+Task 2: Frontend UI (React Native Expo - RedBus Style)
+Theme: Primary Color: #007A33 (Sporty Green), Background: #F5F5F5.
+Home Screen (RedBus Style):
+Top Bar: Location selector & Profile icon.
+Search Bar: "Search for turfs in Sivakasi..."
+Turf List: Vertical cards with Image on left, Details (Name, Rating, Price) on right, and a "View Slots" button.
+Booking Screen:
+A horizontal Date Scroller.
+A Grid of 1-hour time slots (Morning, Afternoon, Evening sections).
+Change slot color to Red if 'Booked', Green if 'Available', and Orange if 'Selected'.
+Navigation: Simple Bottom Tabs (Home, My Bookings, Profile).
+Task 3: Integration
+Use Axios for API calls.
+Provide a README with all npm install commands and instructions to run.
+Ensure the code is modular, well-commented, and in English.
