@@ -1,103 +1,22 @@
-Improve and enhance my Python-based Driver Monitoring System built using OpenCV, MediaPipe Face Mesh, and YOLOv8-tiny with high accuracy and an advanced voice alert system.
-
-Apply the following improvements:
-
-1. Eye Blink Detection:
-
-- Use Eye Aspect Ratio (EAR) instead of simple eye closure.
-- Apply temporal smoothing (moving average or exponential smoothing).
-- Detect blink only if EAR drops below threshold and recovers within 100–400 ms.
-- Differentiate between normal blink and long eye closure (drowsiness).
-- Use both eyes and average EAR.
-- Implement dynamic threshold calibration per user.
-
-2. Yawn Detection:
-
-- Use Mouth Aspect Ratio (MAR).
-- Detect yawning only if mouth remains open for more than 1.5–2 seconds.
-- Add jaw velocity analysis:
-  - Fast motion → talking
-  - Slow wide opening → yawning
-- Ensure face is forward-facing using head pose estimation.
-
-3. Gaze Tracking:
-
-- Smooth iris movement using moving average or Kalman filter.
-- Normalize gaze relative to eye width.
-- Use a 3-second rolling window.
-- Trigger alert only if gaze is off-center in more than 70% of frames.
-
-4. Distraction Detection:
-
-- Use YOLOv8-tiny to detect "cell phone" and "cigarette".
-- Restrict detection to driver ROI.
-- Tune confidence threshold (0.4–0.6).
-- Use object tracking (SORT/DeepSORT) for persistence.
-- Trigger alert only if detected continuously for more than 2 seconds.
-
-5. Heart Rate Monitoring (rPPG):
-
-- Use forehead ROI only.
-- Apply detrending and z-score normalization.
-- Use bandpass filter (0.75–4 Hz).
-- Apply smoothing and FFT for BPM estimation.
-- Maintain 10–15 sec buffer before output.
-- Reject noisy signals using signal quality checks.
-- Optionally use ICA for noise separation.
-
-6. Multi-Feature Risk Fusion:
-
-- Combine:
-  - Blink rate
-  - Eye closure duration
-  - Yawning duration
-  - Gaze deviation
-  - Distraction detection
-  - Heart rate abnormality
-- Generate a Risk Score (0–100%).
-- Trigger alerts only when risk exceeds 80%.
-
-7. Time-Based Filtering:
-
-- Blink: 100–400 ms
-- Eye closure: >1.5 sec
-- Yawn: >1.5–2 sec
-- Gaze away: >3 sec
-- Distraction: >2 sec
-
-8. Lighting & Stability:
-
-- Apply CLAHE (adaptive histogram equalization).
-- Stabilize face ROI across frames.
-- Ignore low-confidence detections.
-
-9. Performance Optimization:
-
-- Use frame skipping (every 2–3 frames).
-- Separate detection and tracking.
-- Maintain real-time FPS.
-
-10. Calibration:
-
-- Add 5–10 sec initial calibration phase.
-- Dynamically adjust EAR, MAR, gaze thresholds.
-
-11. Advanced Voice Alert System:
-
-- Use pyttsx3 or gTTS for voice output.
-- Trigger voice alert when Risk Score > 80%.
-- Default message:
-  "Warning: Driver is drowsy. Please take a break."
-- Support multi-language:
-  - English
-  - Tamil
-- Add toggle option to switch language at runtime.
-- Ensure non-blocking audio using threading or async playback.
-- Implement cooldown (e.g., alert only once every 10–15 seconds).
-- Add priority-based alerts:
-  - Medium Risk → soft warning tone
-  - High Risk → full voice alert
-- Prevent repeated overlapping audio.
-- Optionally adjust volume and speech rate dynamically.
-
-Ensure the system is modular, efficient, real-time, and minimizes false positives while maintaining high reliability in real driving conditions.
+Role: Act as a Senior Full-Stack Developer.
+Project: Turf Slot Booking Mobile App (React Native + Node.js).
+​Task: Generate a production-ready starter code for a Turf Booking System with a high-end UI.
+​1. Backend (Node.js & MongoDB):
+​Create a server.js with Express.
+​Define Mongoose Schemas for:
+​User: (Name, Email, Phone, Password).
+​Turf: (Name, Location, PricePerHour, ImageURL).
+​Booking: (User ID, Turf ID, Date, TimeSlot, Status).
+​Create an API endpoint POST /book that checks if a slot is already booked for that date and turf before saving.
+​Create an API endpoint GET /slots/:turfId/:date to return available time slots.
+​2. Frontend (React Native - Expo):
+​Create a modern HomeScreen using FlatList to show available turfs in cards.
+​Create a BookingScreen with:
+​A Date Picker (or Calendar).
+​A Time Slot Grid (e.g., 6 AM to 11 PM) where booked slots are disabled/red and available slots are clickable/green.
+​Use Axios for API calls.
+​3. Style Preference:
+​Use a "Midnight Sports" theme: Dark background (#121212), Neon Green accents (#39FF14), and White text.
+​4. Output: > - Provide the code for server.js, models.js, and the main React Native components.
+​List all npm install commands for both backend and frontend.
+​Explain how to run both simultaneously.
