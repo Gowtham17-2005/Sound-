@@ -1,89 +1,102 @@
 {
-  "task": "add_filter_feature",
+  "task": "upgrade_admin_and_booking_features",
   "instructions": {
     "important": [
       "Do not rebuild the app",
-      "Integrate filter feature into existing system",
-      "Ensure all existing features continue working"
+      "Fix existing issues and extend features",
+      "Keep current system and database intact"
     ]
   },
-  "ui_design": {
-    "filter_button": {
-      "location": "top right near search bar",
-      "icon": "sliders/filter icon",
-      "action": "open bottom sheet"
+
+  "admin_panel_fixes": {
+    "turf_save": {
+      "issue": "turf save option not working",
+      "fix": "ensure save API is connected and data is stored correctly in database"
     },
-    "filter_layout": {
-      "type": "bottom_sheet",
-      "sections": [
-        "location",
-        "price_range",
-        "time",
-        "rating"
+
+    "time_format": {
+      "requirement": "use 12-hour format with AM/PM",
+      "example": "6:00 AM to 10:00 PM",
+      "remove_24hr_format": true
+    },
+
+    "image_upload": {
+      "add_feature": true,
+      "requirement": [
+        "add image picker option",
+        "upload turf images to server or cloud storage",
+        "store image URL in database",
+        "display uploaded images in user app automatically"
+      ]
+    },
+
+    "location_update": {
+      "google_maps": true,
+      "features": [
+        "allow admin to select exact turf location using map",
+        "store latitude and longitude",
+        "show exact location in user view using map"
+      ]
+    },
+
+    "multi_admin_security": {
+      "requirement": [
+        "each admin should see only their own turf",
+        "do not show other admin turf data",
+        "filter data using owner/admin ID"
       ]
     }
   },
-  "filter_sections": {
-    "location": {
-      "district_dropdown": true,
-      "place_dropdown": true,
-      "dynamic_places": "load places based on selected district",
-      "data_source": "database collection for districts and places"
-    },
-    "price_range": {
-      "type": "slider",
-      "min": 0,
-      "max": 5000,
-      "label": "price per hour"
-    },
-    "time_filter": {
-      "type": "chips",
+
+  "booking_management": {
+    "admin_control": {
+      "add_feature": true,
       "options": [
-        "morning",
-        "afternoon",
-        "evening",
-        "night"
+        "approve booking",
+        "reject booking"
       ]
     },
-    "rating_filter": {
-      "type": "options",
-      "values": [
-        "3+",
-        "4+"
+
+    "user_details": {
+      "requirement": [
+        "show user name",
+        "show phone number",
+        "show booking time and date"
       ]
     }
   },
-  "actions": {
-    "apply_button": "apply selected filters",
-    "reset_button": "clear all filters"
+
+  "slot_system": {
+    "auto_generation": {
+      "based_on": "opening_time and closing_time",
+      "format": "12-hour AM/PM",
+      "interval": "1 hour"
+    },
+    "status_colors": {
+      "available": "green",
+      "booked": "red"
+    }
   },
-  "logic": {
-    "on_apply": [
-      "collect all selected filters",
-      "send filters to backend",
-      "fetch filtered turf list",
-      "update UI with results"
-    ],
-    "query_parameters": [
-      "district",
-      "place",
-      "price_range",
-      "time",
-      "rating"
-    ]
+
+  "user_app_updates": {
+    "location_display": {
+      "requirement": "show turf exact location using map"
+    },
+    "image_display": {
+      "requirement": "show admin uploaded turf images"
+    }
   },
-  "ui_feedback": {
-    "show_selected_filters": true,
-    "display_result_count": "show number of turfs found",
-    "empty_state": "show message if no turfs found"
+
+  "performance_and_validation": {
+    "add_loading": true,
+    "error_handling": true,
+    "validate_inputs": true
   },
-  "performance": {
-    "optimize_api_calls": true,
-    "show_loading_indicator": true
-  },
+
   "output": {
     "type": "modified_code_only",
     "ensure_working": true
   },
-  "goal": "Add a clean, modern filter system with bottom sheet UI for better turf search experience"
+
+  "goal": "Fix admin panel issues and upgrade turf booking system with image upload, map location, booking approval, and secure multi-admin system"
 }
