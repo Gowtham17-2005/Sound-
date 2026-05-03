@@ -1,25 +1,143 @@
-Role: Expert Full-Stack Developer (Node.js & React Native).
-Objective: Create a complete "Turf Slot Booking" application with a RedBus-style clean UI.
-Task 1: Backend (Node.js/Express & MongoDB)
-Create a server.js using Express.
-Models: >   - User: Name, Phone, Password.
-Turf: Name, Location, Price (e.g., ₹800/hr), Rating, ImageURL.
-Booking: UserID, TurfID, Date, TimeSlot (e.g., "18:00 - 19:00"), PaymentStatus.
-APIs: >   - GET /api/turfs: To list all turfs.
-POST /api/check-availability: To check if a specific slot is taken for a given date.
-POST /api/book: To save a booking (Must prevent double-booking).
-Task 2: Frontend UI (React Native Expo - RedBus Style)
-Theme: Primary Color: #007A33 (Sporty Green), Background: #F5F5F5.
-Home Screen (RedBus Style):
-Top Bar: Location selector & Profile icon.
-Search Bar: "Search for turfs in Sivakasi..."
-Turf List: Vertical cards with Image on left, Details (Name, Rating, Price) on right, and a "View Slots" button.
-Booking Screen:
-A horizontal Date Scroller.
-A Grid of 1-hour time slots (Morning, Afternoon, Evening sections).
-Change slot color to Red if 'Booked', Green if 'Available', and Orange if 'Selected'.
-Navigation: Simple Bottom Tabs (Home, My Bookings, Profile).
-Task 3: Integration
-Use Axios for API calls.
-Provide a README with all npm install commands and instructions to run.
-Ensure the code is modular, well-commented, and in English.
+{
+  "project": "Turf Booking App",
+  "type": "fullstack_mobile_app",
+  "architecture": {
+    "frontend": "Flutter",
+    "backend": "Node.js + Express",
+    "database": "MongoDB Atlas"
+  },
+  "ui": {
+    "style": "clean, modern, minimal",
+    "colors": {
+      "primary": "blue/green",
+      "background": "white",
+      "states": {
+        "available": "green",
+        "booked": "red",
+        "selected": "blue"
+      }
+    },
+    "navigation": "bottom_navigation_bar",
+    "animations": true
+  },
+  "features": {
+    "user": [
+      "signup_login_jwt",
+      "view_turfs",
+      "search_filter_turfs",
+      "view_turf_details",
+      "select_date_and_time_slot",
+      "book_turf",
+      "view_booking_history"
+    ],
+    "admin": [
+      "add_turf",
+      "edit_turf",
+      "delete_turf",
+      "manage_slots",
+      "view_bookings"
+    ]
+  },
+  "slot_system": {
+    "display": "grid",
+    "time_range": "6AM-10PM",
+    "states": {
+      "available": {
+        "color": "green",
+        "clickable": true
+      },
+      "booked": {
+        "color": "red",
+        "clickable": false
+      },
+      "selected": {
+        "color": "blue",
+        "highlight": true
+      }
+    }
+  },
+  "backend": {
+    "auth": "JWT",
+    "structure": [
+      "controllers",
+      "routes",
+      "models",
+      "middleware",
+      "config"
+    ],
+    "apis": [
+      "POST /auth/register",
+      "POST /auth/login",
+      "GET /turfs",
+      "GET /turfs/:id",
+      "GET /bookings/:turfId/:date",
+      "POST /bookings",
+      "GET /user/bookings"
+    ]
+  },
+  "database": {
+    "collections": {
+      "users": [
+        "name",
+        "email",
+        "phone",
+        "password"
+      ],
+      "turfs": [
+        "name",
+        "location",
+        "price_per_hour",
+        "images"
+      ],
+      "bookings": [
+        "turfId",
+        "userId",
+        "date",
+        "timeSlot",
+        "status"
+      ]
+    },
+    "constraints": {
+      "unique_booking": [
+        "turfId",
+        "date",
+        "timeSlot"
+      ]
+    }
+  },
+  "double_booking_prevention": {
+    "method": "unique_index",
+    "logic": [
+      "attempt_insert_booking",
+      "if_duplicate_error_return_slot_already_booked",
+      "else_confirm_booking"
+    ]
+  },
+  "realtime": {
+    "method": "polling_or_websocket",
+    "update_ui_on_booking": true
+  },
+  "security": [
+    "jwt_authentication",
+    "input_validation",
+    "error_handling"
+  ],
+  "env": {
+    "required": [
+      "MONGO_URI",
+      "JWT_SECRET",
+      "PORT"
+    ]
+  },
+  "output": {
+    "include": [
+      "full_backend_code",
+      "flutter_frontend_code",
+      "api_integration",
+      "mongodb_schema",
+      "setup_instructions"
+    ],
+    "quality": "production_ready",
+    "comments": true
+  }
+}
