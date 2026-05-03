@@ -1,93 +1,89 @@
 {
-  "task": "upgrade_existing_app",
-  "app": "turf_booking",
+  "task": "add_filter_feature",
   "instructions": {
     "important": [
-      "Do not rebuild the app from scratch",
-      "Only fix issues and extend existing features",
-      "Keep current architecture, database, and integrations unchanged"
+      "Do not rebuild the app",
+      "Integrate filter feature into existing system",
+      "Ensure all existing features continue working"
     ]
   },
-  "ui_fixes": {
-    "click_issues": [
-      "Fix search box not clickable",
-      "Fix nearby button functionality",
-      "Fix history tab navigation",
-      "Ensure all icons respond to user interaction"
-    ],
-    "navigation": "Ensure smooth navigation between all screens"
-  },
-  "location_features": {
-    "district_place_selection": true,
-    "dropdowns": [
-      "district",
-      "place"
-    ],
-    "database_requirement": "Store all districts and places",
-    "filter_logic": "Filter turfs based on selected district and place",
-    "display": "Show number of turfs available in selected location",
-    "auto_location": {
-      "enabled": true,
-      "fallback": "manual selection"
+  "ui_design": {
+    "filter_button": {
+      "location": "top right near search bar",
+      "icon": "sliders/filter icon",
+      "action": "open bottom sheet"
+    },
+    "filter_layout": {
+      "type": "bottom_sheet",
+      "sections": [
+        "location",
+        "price_range",
+        "time",
+        "rating"
+      ]
     }
   },
-  "slot_ui": {
-    "colors": {
-      "available": "green",
-      "booked": "red",
-      "selected": "blue"
+  "filter_sections": {
+    "location": {
+      "district_dropdown": true,
+      "place_dropdown": true,
+      "dynamic_places": "load places based on selected district",
+      "data_source": "database collection for districts and places"
     },
-    "rules": [
-      "Disable booked slots",
-      "Allow only one slot selection",
-      "Update slot status instantly after booking"
-    ]
+    "price_range": {
+      "type": "slider",
+      "min": 0,
+      "max": 5000,
+      "label": "price per hour"
+    },
+    "time_filter": {
+      "type": "chips",
+      "options": [
+        "morning",
+        "afternoon",
+        "evening",
+        "night"
+      ]
+    },
+    "rating_filter": {
+      "type": "options",
+      "values": [
+        "3+",
+        "4+"
+      ]
+    }
   },
-  "admin_features": {
-    "multi_admin_security": {
-      "isolation": "Each admin must see only their own turf data"
-    },
-    "manage_turf": [
-      "Add turf",
-      "Edit turf",
-      "Delete turf",
-      "Upload turf images",
-      "Show uploaded images in user view instantly"
+  "actions": {
+    "apply_button": "apply selected filters",
+    "reset_button": "clear all filters"
+  },
+  "logic": {
+    "on_apply": [
+      "collect all selected filters",
+      "send filters to backend",
+      "fetch filtered turf list",
+      "update UI with results"
     ],
-    "turf_fields": [
+    "query_parameters": [
       "district",
       "place",
-      "price_per_hour",
-      "opening_time",
-      "closing_time"
+      "price_range",
+      "time",
+      "rating"
     ]
   },
-  "auto_slot_generation": {
-    "enabled": true,
-    "logic": "Generate hourly slots automatically based on opening and closing time"
-  },
-  "booking_system": {
-    "prevent_double_booking": true,
-    "error_handling": "Show message if slot already booked",
-    "reliability": "Ensure safe booking logic"
-  },
-  "booking_history": {
-    "fix": true,
-    "display": [
-      "upcoming bookings",
-      "past bookings"
-    ]
+  "ui_feedback": {
+    "show_selected_filters": true,
+    "display_result_count": "show number of turfs found",
+    "empty_state": "show message if no turfs found"
   },
   "performance": {
-    "loading_indicators": true,
-    "error_messages": true,
-    "optimize_calls": true,
-    "smooth_ui": true
+    "optimize_api_calls": true,
+    "show_loading_indicator": true
   },
   "output": {
-    "type": "only_modified_code",
-    "no_full_rewrite": true,
+    "type": "modified_code_only",
     "ensure_working": true
   },
-  "goal": "Upgrade the app into a production-ready turf booking system with working UI, location filtering, secure admin control, automatic slot generation, and reliable booking flow"
+  "goal": "Add a clean, modern filter system with bottom sheet UI for better turf search experience"
 }
