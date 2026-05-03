@@ -1,143 +1,93 @@
 {
-  "project": "Turf Booking App",
-  "type": "fullstack_mobile_app",
-  "architecture": {
-    "frontend": "Flutter",
-    "backend": "Node.js + Express",
-    "database": "MongoDB Atlas"
+  "task": "upgrade_existing_app",
+  "app": "turf_booking",
+  "instructions": {
+    "important": [
+      "Do not rebuild the app from scratch",
+      "Only fix issues and extend existing features",
+      "Keep current architecture, database, and integrations unchanged"
+    ]
   },
-  "ui": {
-    "style": "clean, modern, minimal",
+  "ui_fixes": {
+    "click_issues": [
+      "Fix search box not clickable",
+      "Fix nearby button functionality",
+      "Fix history tab navigation",
+      "Ensure all icons respond to user interaction"
+    ],
+    "navigation": "Ensure smooth navigation between all screens"
+  },
+  "location_features": {
+    "district_place_selection": true,
+    "dropdowns": [
+      "district",
+      "place"
+    ],
+    "database_requirement": "Store all districts and places",
+    "filter_logic": "Filter turfs based on selected district and place",
+    "display": "Show number of turfs available in selected location",
+    "auto_location": {
+      "enabled": true,
+      "fallback": "manual selection"
+    }
+  },
+  "slot_ui": {
     "colors": {
-      "primary": "blue/green",
-      "background": "white",
-      "states": {
-        "available": "green",
-        "booked": "red",
-        "selected": "blue"
-      }
+      "available": "green",
+      "booked": "red",
+      "selected": "blue"
     },
-    "navigation": "bottom_navigation_bar",
-    "animations": true
-  },
-  "features": {
-    "user": [
-      "signup_login_jwt",
-      "view_turfs",
-      "search_filter_turfs",
-      "view_turf_details",
-      "select_date_and_time_slot",
-      "book_turf",
-      "view_booking_history"
-    ],
-    "admin": [
-      "add_turf",
-      "edit_turf",
-      "delete_turf",
-      "manage_slots",
-      "view_bookings"
+    "rules": [
+      "Disable booked slots",
+      "Allow only one slot selection",
+      "Update slot status instantly after booking"
     ]
   },
-  "slot_system": {
-    "display": "grid",
-    "time_range": "6AM-10PM",
-    "states": {
-      "available": {
-        "color": "green",
-        "clickable": true
-      },
-      "booked": {
-        "color": "red",
-        "clickable": false
-      },
-      "selected": {
-        "color": "blue",
-        "highlight": true
-      }
-    }
-  },
-  "backend": {
-    "auth": "JWT",
-    "structure": [
-      "controllers",
-      "routes",
-      "models",
-      "middleware",
-      "config"
-    ],
-    "apis": [
-      "POST /auth/register",
-      "POST /auth/login",
-      "GET /turfs",
-      "GET /turfs/:id",
-      "GET /bookings/:turfId/:date",
-      "POST /bookings",
-      "GET /user/bookings"
-    ]
-  },
-  "database": {
-    "collections": {
-      "users": [
-        "name",
-        "email",
-        "phone",
-        "password"
-      ],
-      "turfs": [
-        "name",
-        "location",
-        "price_per_hour",
-        "images"
-      ],
-      "bookings": [
-        "turfId",
-        "userId",
-        "date",
-        "timeSlot",
-        "status"
-      ]
+  "admin_features": {
+    "multi_admin_security": {
+      "isolation": "Each admin must see only their own turf data"
     },
-    "constraints": {
-      "unique_booking": [
-        "turfId",
-        "date",
-        "timeSlot"
-      ]
-    }
-  },
-  "double_booking_prevention": {
-    "method": "unique_index",
-    "logic": [
-      "attempt_insert_booking",
-      "if_duplicate_error_return_slot_already_booked",
-      "else_confirm_booking"
+    "manage_turf": [
+      "Add turf",
+      "Edit turf",
+      "Delete turf",
+      "Upload turf images",
+      "Show uploaded images in user view instantly"
+    ],
+    "turf_fields": [
+      "district",
+      "place",
+      "price_per_hour",
+      "opening_time",
+      "closing_time"
     ]
   },
-  "realtime": {
-    "method": "polling_or_websocket",
-    "update_ui_on_booking": true
+  "auto_slot_generation": {
+    "enabled": true,
+    "logic": "Generate hourly slots automatically based on opening and closing time"
   },
-  "security": [
-    "jwt_authentication",
-    "input_validation",
-    "error_handling"
-  ],
-  "env": {
-    "required": [
-      "MONGO_URI",
-      "JWT_SECRET",
-      "PORT"
+  "booking_system": {
+    "prevent_double_booking": true,
+    "error_handling": "Show message if slot already booked",
+    "reliability": "Ensure safe booking logic"
+  },
+  "booking_history": {
+    "fix": true,
+    "display": [
+      "upcoming bookings",
+      "past bookings"
     ]
+  },
+  "performance": {
+    "loading_indicators": true,
+    "error_messages": true,
+    "optimize_calls": true,
+    "smooth_ui": true
   },
   "output": {
-    "include": [
-      "full_backend_code",
-      "flutter_frontend_code",
-      "api_integration",
-      "mongodb_schema",
-      "setup_instructions"
-    ],
-    "quality": "production_ready",
-    "comments": true
-  }
+    "type": "only_modified_code",
+    "no_full_rewrite": true,
+    "ensure_working": true
+  },
+  "goal": "Upgrade the app into a production-ready turf booking system with working UI, location filtering, secure admin control, automatic slot generation, and reliable booking flow"
 }
