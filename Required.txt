@@ -1,11 +1,12 @@
 {
-  "project": "Turf Booking App Full Upgrade",
-  "goal": "Upgrade existing Turf Booking App to full production-ready system including frontend, backend, and database WITHOUT breaking existing app or data",
+  "project": "Turf Booking App - Full Production Upgrade",
+  "goal": "Build and upgrade a full-stack turf booking application with commission-based revenue model WITHOUT breaking existing app or database",
 
   "environment": {
     "frontend": "mobile_or_web_app",
     "backend": "Node.js + Express",
-    "database": "MongoDB Atlas"
+    "database": "MongoDB Atlas",
+    "payment_gateway": "Razorpay"
   },
 
   "strict_rules": {
@@ -13,16 +14,22 @@
     "do_not_modify_existing_ui": true,
     "do_not_modify_existing_collections": true,
     "do_not_modify_existing_apis": true,
-    "only_add_new_features_as_extensions": true,
-    "backward_compatibility_required": true,
+    "only_add_new_features": true,
+    "backward_compatibility": true,
     "zero_downtime": true
   },
 
-  "architecture": {
-    "pattern": "parallel_extension_architecture",
-    "backend": "modular (routes, controllers, services, models)",
-    "frontend": "component_based",
-    "api_strategy": "create_new_v2_endpoints_only"
+  "business_model": {
+    "type": "commission_based",
+    "commission_percent": 5,
+    "rules": [
+      "turf owner sets base price",
+      "platform adds commission dynamically",
+      "user pays final price (base + commission)",
+      "store base_price, commission_amount, final_price separately",
+      "do not modify original turf price"
+    ],
+    "formula": "final_price = base_price + (base_price * commission_percent / 100)"
   },
 
   "existing_features": {
@@ -40,96 +47,129 @@
     ]
   },
 
-  "new_backend_features": [
+  "new_backend_modules": [
     {
       "name": "payments",
       "collection": "payments",
-      "fields": ["booking_id", "amount", "status", "method", "created_at"],
-      "api": ["/api/v2/payments/create"],
-      "logic": "create payment after booking, do not block booking flow"
+      "fields": [
+        "booking_id",
+        "base_price",
+        "commission_percent",
+        "commission_amount",
+        "final_price",
+        "status",
+        "method",
+        "created_at"
+      ],
+      "logic": [
+        "calculate commission in backend",
+        "create Razorpay order using final_price",
+        "verify payment securely",
+        "store payment details"
+      ]
     },
     {
       "name": "amenities",
       "collections": ["amenities", "turf_amenities"],
-      "api": ["/api/v2/turfs/:id/amenities"],
-      "logic": "map amenities to turf and fetch dynamically"
+      "logic": [
+        "store amenities separately",
+        "map with turf_id",
+        "fetch using aggregation"
+      ]
     },
     {
       "name": "reviews",
       "collection": "reviews",
-      "api": [
-        "/api/v2/reviews/add",
-        "/api/v2/turfs/:id/reviews"
-      ],
-      "logic": "store rating and calculate average"
+      "fields": ["user_id", "turf_id", "rating", "comment", "created_at"],
+      "logic": [
+        "users can add reviews",
+        "calculate average rating",
+        "extend turf response safely"
+      ]
     },
     {
       "name": "reschedule",
-      "collection_update": "bookings (add optional fields)",
-      "api": ["/api/v2/bookings/reschedule"],
-      "logic": "allow reschedule without modifying original booking"
+      "collection_update": "bookings",
+      "add_fields": ["reschedule_count", "rescheduled_from"],
+      "logic": [
+        "allow reschedule before time limit",
+        "do not overwrite original booking"
+      ]
     },
     {
       "name": "notifications",
       "collection": "notifications",
-      "api": ["/api/v2/notifications"],
-      "logic": "event-based notifications"
+      "logic": [
+        "send booking confirmation",
+        "send reminders",
+        "non-blocking system"
+      ]
     },
     {
-      "name": "dynamic_pricing",
+      "name": "pricing_rules",
       "collection": "pricing_rules",
-      "api": ["/api/v2/admin/pricing-rules"],
-      "logic": "apply price at runtime"
+      "logic": [
+        "support weekday/weekend pricing",
+        "apply at runtime only"
+      ]
     },
     {
       "name": "earnings",
-      "api": ["/api/v2/admin/earnings"],
-      "logic": "calculate revenue using payments collection"
+      "logic": [
+        "calculate revenue from commission",
+        "use aggregation queries",
+        "admin dashboard metrics"
+      ]
     }
   ],
 
-  "new_frontend_features": [
-    {
-      "feature": "amenities_ui",
-      "screen": "turf_detail",
-      "ui": "show icons and labels for amenities"
-    },
-    {
-      "feature": "reviews_ui",
-      "screen": "turf_detail",
-      "ui": "rating display + review list + add review form"
-    },
-    {
-      "feature": "payment_flow",
-      "screen": "after_slot_selection",
-      "ui": "payment screen with success/failure handling"
-    },
-    {
-      "feature": "reschedule_button",
-      "screen": "my_bookings",
-      "ui": "reschedule option with slot picker"
-    },
-    {
-      "feature": "notifications_ui",
-      "screen": "global_header",
-      "ui": "notification icon + list screen"
-    },
-    {
-      "feature": "admin_amenities",
-      "screen": "admin_turf_management",
-      "ui": "multi-select amenities input"
-    },
-    {
-      "feature": "admin_pricing",
-      "screen": "admin_slot_management",
-      "ui": "set weekday/weekend pricing"
-    },
-    {
-      "feature": "admin_dashboard",
-      "screen": "admin_panel",
-      "ui": "earnings dashboard with charts"
-    }
-  ],
+  "api_design": {
+    "rules": [
+      "do not change existing APIs",
+      "create new APIs under /api/v2",
+      "all new features must use v2 APIs"
+    ],
+    "endpoints": [
+      "POST /api/v2/payments/create",
+      "POST /api/v2/reviews",
+      "GET /api/v2/turfs/:id/reviews",
+      "POST /api/v2/bookings/reschedule",
+      "GET /api/v2/notifications",
+      "GET /api/v2/admin/earnings",
+      "POST /api/v2/admin/pricing"
+    ]
+  },
+
+  "frontend_upgrade": {
+    "rules": [
+      "do not modify existing screens",
+      "add new UI components only",
+      "hide feature if API fails"
+    ],
+    "features": [
+      "show final price including commission",
+      "display base price + platform fee separately",
+      "amenities section in turf details",
+      "ratings and reviews UI",
+      "payment screen integration",
+      "reschedule button in bookings",
+      "notification icon and screen",
+      "admin dashboard with earnings",
+      "admin amenities selection",
+      "admin dynamic pricing UI"
+    ]
+  },
+
+  "payment_flow": {
+    "steps": [
+      "user selects slot",
+      "backend calculates final price",
+      "create Razorpay order",
+      "frontend opens payment UI",
+      "verify payment",
+      "store payment and booking confirmation"
+    ]
+  },
 
   "database_plan": {
     "new_collections": [
@@ -141,43 +181,26 @@
       "pricing_rules"
     ],
     "safe_updates": [
-      "add optional fields to bookings: reschedule_count, rescheduled_from"
+      "add optional fields in bookings only"
     ]
-  },
-
-  "api_rules": {
-    "do_not_change_existing_apis": true,
-    "use_v2_routes": true,
-    "fallback_safe": true
-  },
-
-  "frontend_rules": {
-    "do_not_modify_existing_screens": true,
-    "add_new_components_only": true,
-    "hide_feature_if_api_fails": true
   },
 
   "safety": {
     "feature_flags": true,
     "fallback_mode": true,
-    "error_handling": "non-blocking"
-  },
-
-  "flow": {
-    "booking": [
-      "user selects slot",
-      "existing booking API runs",
-      "new payment API triggered",
-      "notification triggered"
+    "error_handling": "non-blocking",
+    "rules": [
+      "if new feature fails, old system must still work",
+      "never block booking flow"
     ]
   },
 
   "expected_output": [
-    "complete backend code (Node.js + Express)",
+    "clean backend code",
     "mongoose schemas",
-    "API routes (/v2)",
-    "frontend components/screens",
-    "API integration code",
+    "express routes",
+    "frontend components",
+    "api integration",
     "step-by-step setup guide"
   ]
 }
