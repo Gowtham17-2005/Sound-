@@ -1,206 +1,118 @@
 {
-  "project": "Turf Booking App - Full Production Upgrade",
-  "goal": "Build and upgrade a full-stack turf booking application with commission-based revenue model WITHOUT breaking existing app or database",
+  "task": "Fix multi-admin data isolation and revenue calculation in Turf Booking App",
 
-  "environment": {
-    "frontend": "mobile_or_web_app",
-    "backend": "Node.js + Express",
-    "database": "MongoDB Atlas",
-    "payment_gateway": "Razorpay"
+  "goal": [
+    "Each admin should see ONLY their own turfs",
+    "Each admin should see ONLY their own bookings",
+    "Each admin should see their own revenue (commission-based)",
+    "No admin should access another admin's data"
+  ],
+
+  "existing_problem": [
+    "All turfs are visible to every admin after login",
+    "No owner/admin mapping in turf data",
+    "Revenue is not calculated per admin"
+  ],
+
+  "constraints": {
+    "do_not_break_existing_app": true,
+    "do_not_modify_existing_logic_directly": true,
+    "only_add_safe_fields_and_filters": true
   },
 
-  "strict_rules": {
-    "do_not_modify_existing_code": true,
-    "do_not_modify_existing_ui": true,
-    "do_not_modify_existing_collections": true,
-    "do_not_modify_existing_apis": true,
-    "only_add_new_features": true,
-    "backward_compatibility": true,
-    "zero_downtime": true
+  "database_changes": {
+    "turfs_collection": {
+      "add_field": "owner_id (ObjectId referencing admin user)"
+    },
+    "bookings_collection": {
+      "add_field": "owner_id (copy from turf owner)"
+    },
+    "payments_collection": {
+      "ensure_field": "owner_id"
+    }
   },
 
-  "business_model": {
-    "type": "commission_based",
-    "commission_percent": 5,
-    "rules": [
-      "turf owner sets base price",
-      "platform adds commission dynamically",
-      "user pays final price (base + commission)",
-      "store base_price, commission_amount, final_price separately",
-      "do not modify original turf price"
-    ],
-    "formula": "final_price = base_price + (base_price * commission_percent / 100)"
-  },
-
-  "existing_features": {
-    "user": [
-      "login_signup",
-      "turf_search_basic",
-      "slot_booking",
-      "my_bookings_basic"
-    ],
-    "admin": [
-      "admin_login",
-      "turf_management_basic",
-      "slot_management_basic",
-      "booking_management"
-    ]
-  },
-
-  "new_backend_modules": [
+  "backend_changes": [
     {
-      "name": "payments",
-      "collection": "payments",
-      "fields": [
-        "booking_id",
-        "base_price",
-        "commission_percent",
-        "commission_amount",
-        "final_price",
-        "status",
-        "method",
-        "created_at"
-      ],
-      "logic": [
-        "calculate commission in backend",
-        "create Razorpay order using final_price",
-        "verify payment securely",
-        "store payment details"
-      ]
+      "task": "Attach owner_id when creating turf",
+      "logic": "owner_id = logged-in admin id"
     },
     {
-      "name": "amenities",
-      "collections": ["amenities", "turf_amenities"],
-      "logic": [
-        "store amenities separately",
-        "map with turf_id",
-        "fetch using aggregation"
-      ]
+      "task": "Filter turfs by logged-in admin",
+      "code_example": "Turf.find({ owner_id: req.admin.id })"
     },
     {
-      "name": "reviews",
-      "collection": "reviews",
-      "fields": ["user_id", "turf_id", "rating", "comment", "created_at"],
-      "logic": [
-        "users can add reviews",
-        "calculate average rating",
-        "extend turf response safely"
-      ]
+      "task": "Filter bookings by admin",
+      "code_example": "Bookings.find({ owner_id: req.admin.id })"
     },
     {
-      "name": "reschedule",
-      "collection_update": "bookings",
-      "add_fields": ["reschedule_count", "rescheduled_from"],
-      "logic": [
-        "allow reschedule before time limit",
-        "do not overwrite original booking"
-      ]
+      "task": "Attach owner_id during booking creation",
+      "logic": "copy owner_id from turf to booking"
     },
     {
-      "name": "notifications",
-      "collection": "notifications",
-      "logic": [
-        "send booking confirmation",
-        "send reminders",
-        "non-blocking system"
-      ]
-    },
-    {
-      "name": "pricing_rules",
-      "collection": "pricing_rules",
-      "logic": [
-        "support weekday/weekend pricing",
-        "apply at runtime only"
-      ]
-    },
-    {
-      "name": "earnings",
-      "logic": [
-        "calculate revenue from commission",
-        "use aggregation queries",
-        "admin dashboard metrics"
-      ]
+      "task": "Filter payments by admin",
+      "code_example": "Payments.find({ owner_id: req.admin.id })"
     }
   ],
 
-  "api_design": {
-    "rules": [
-      "do not change existing APIs",
-      "create new APIs under /api/v2",
-      "all new features must use v2 APIs"
+  "authentication": {
+    "requirement": "Use JWT or session-based login",
+    "store": [
+      "admin_id",
+      "admin_name"
     ],
-    "endpoints": [
-      "POST /api/v2/payments/create",
-      "POST /api/v2/reviews",
-      "GET /api/v2/turfs/:id/reviews",
-      "POST /api/v2/bookings/reschedule",
-      "GET /api/v2/notifications",
-      "GET /api/v2/admin/earnings",
-      "POST /api/v2/admin/pricing"
-    ]
+    "middleware": "Attach admin data to request (req.admin)"
   },
 
-  "frontend_upgrade": {
-    "rules": [
-      "do not modify existing screens",
-      "add new UI components only",
-      "hide feature if API fails"
+  "revenue_calculation": {
+    "type": "commission_based",
+    "logic": [
+      "Each booking has commission_amount",
+      "Sum commission_amount for logged-in admin only"
     ],
-    "features": [
-      "show final price including commission",
-      "display base price + platform fee separately",
-      "amenities section in turf details",
-      "ratings and reviews UI",
-      "payment screen integration",
-      "reschedule button in bookings",
-      "notification icon and screen",
-      "admin dashboard with earnings",
-      "admin amenities selection",
-      "admin dynamic pricing UI"
+    "aggregation_example": [
+      {
+        "$match": {
+          "owner_id": "req.admin.id",
+          "status": "paid"
+        }
+      },
+      {
+        "$group": {
+          "_id": null,
+          "total_revenue": { "$sum": "$commission_amount" },
+          "total_bookings": { "$sum": 1 }
+        }
+      }
     ]
   },
 
-  "payment_flow": {
-    "steps": [
-      "user selects slot",
-      "backend calculates final price",
-      "create Razorpay order",
-      "frontend opens payment UI",
-      "verify payment",
-      "store payment and booking confirmation"
-    ]
-  },
+  "frontend_changes": [
+    "Display admin name after login",
+    "Show only filtered turfs (API handled)",
+    "Add admin revenue dashboard",
+    "Show total earnings and booking count"
+  ],
 
-  "database_plan": {
-    "new_collections": [
-      "payments",
-      "amenities",
-      "turf_amenities",
-      "reviews",
-      "notifications",
-      "pricing_rules"
-    ],
-    "safe_updates": [
-      "add optional fields in bookings only"
-    ]
-  },
+  "security_rules": [
+    "Never return data without owner_id filter",
+    "Every API must validate logged-in admin",
+    "Prevent cross-admin data access"
+  ],
 
-  "safety": {
-    "feature_flags": true,
-    "fallback_mode": true,
-    "error_handling": "non-blocking",
-    "rules": [
-      "if new feature fails, old system must still work",
-      "never block booking flow"
-    ]
-  },
+  "migration_plan": [
+    "Add owner_id field to turfs",
+    "Update existing turfs with correct owner_id",
+    "Propagate owner_id to bookings and payments",
+    "Deploy backend filters",
+    "Test with multiple admin accounts"
+  ],
 
   "expected_output": [
-    "clean backend code",
-    "mongoose schemas",
-    "express routes",
-    "frontend components",
-    "api integration",
-    "step-by-step setup guide"
+    "updated mongoose schemas",
+    "secure API routes",
+    "JWT middleware",
+    "aggregation queries for revenue",
+    "frontend dashboard integration"
   ]
 }
