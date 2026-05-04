@@ -1,161 +1,74 @@
 {
-  "project": "Turf Booking App - Complete Fix and Functional Upgrade",
+  "goal": "Fix all runtime errors, API mismatches, null issues, and state problems in Flutter turf booking app",
 
-  "goal": "Fix all non-working UI elements, broken APIs, filters, slot system, and admin features to ensure fully working end-to-end turf booking system",
-
-  "critical_fix_rules": [
-    "ensure all frontend buttons are connected to backend APIs",
-    "fix all broken event handlers",
-    "ensure API calls are properly implemented",
-    "handle loading and error states",
-    "no dummy UI - everything must be functional"
+  "flutter_fixes": [
+    "ensure all API responses are null-safe",
+    "add null checks before using response data",
+    "handle empty API responses",
+    "add try-catch for all async calls",
+    "show loading indicator during API calls",
+    "avoid calling setState after dispose"
   ],
 
-  "frontend_fixes": {
-    "buttons": [
-      "fix add turf button click",
-      "fix all icons click actions",
-      "connect buttons to APIs"
-    ],
-    "search": {
-      "fix search by district",
-      "fix search by place",
-      "trigger API on search input change"
+  "api_response_fix": {
+    "rule": "standardize API response",
+    "format": {
+      "success": true,
+      "data": []
     },
-    "filters": {
-      "fix filter UI to actually filter data",
-      "connect price filter to backend",
-      "update turf list dynamically"
-    },
-    "ui_data_binding": [
-      "ensure turf list loads from backend",
-      "show turf name, location, price",
-      "display turf image properly",
-      "display ratings"
+    "ensure": [
+      "response contains data field",
+      "data is always an array",
+      "no undefined fields"
     ]
   },
 
-  "backend_fixes": {
-    "api_validation": [
-      "ensure all routes return correct data",
-      "fix missing controllers",
-      "fix improper queries"
+  "slot_fetch_fix": {
+    "issues": [
+      "timeSlot field missing",
+      "wrong mapping logic"
     ],
-    "search_filter_api": {
-      "endpoint": "/turfs/filter",
-      "logic": [
-        "filter by district",
-        "filter by place",
-        "filter by price range"
-      ]
-    }
-  },
-
-  "slot_generation_system": {
-    "requirement": "auto generate slots based on opening and closing time",
-    "logic": [
-      "admin enters opening_time (e.g., 6:00 AM)",
-      "admin enters closing_time (e.g., 10:00 PM)",
-      "generate 1-hour slots automatically",
-      "store slots in database"
-    ],
-    "example": [
-      "6-7 AM",
-      "7-8 AM",
-      "8-9 AM"
-    ]
-  },
-
-  "booking_system_fix": [
-    "ensure slots are fetched and displayed",
-    "disable already booked slots",
-    "allow user to select slot",
-    "confirm booking after payment"
-  ],
-
-  "turf_creation_fix": {
-    "requirement": "add turf must work properly",
-    "fields": [
-      "turf name",
-      "district",
-      "place",
-      "price",
-      "opening time",
-      "closing time",
-      "image upload"
-    ],
-    "after_submit": [
-      "save turf",
-      "auto generate slots",
-      "show in user app"
-    ]
-  },
-
-  "image_upload": {
-    "requirement": "turf images must display to users",
-    "implementation": [
-      "use cloud storage or base64",
-      "store image URL in DB",
-      "display image in UI"
-    ]
-  },
-
-  "admin_fixes": [
-    "fix add turf action",
-    "fix slot generation",
-    "fix booking view",
-    "fix earnings calculation"
-  ],
-
-  "user_side_fixes": [
-    "load turf list correctly",
-    "enable search and filters",
-    "show turf details page",
-    "display slots properly",
-    "enable booking flow"
-  ],
-
-  "data_binding": {
-    "rule": "every UI element must show real backend data",
-    "no_static_data": true
-  },
-
-  "error_handling": [
-    "show error message if API fails",
-    "handle empty results",
-    "show loading indicator"
-  ],
-
-  "multi_admin_fix": {
-    "rule": "admin must see only their own turfs",
-    "implementation": [
-      "filter by owner_id in all queries"
-    ]
-  },
-
-  "commission_system": {
-    "percentage": 5,
     "fix": [
-      "calculate dynamically",
-      "show final price to user"
+      "ensure booking schema has timeSlot",
+      "validate response before mapping",
+      "use safe mapping: bookings?.map(...) ?? []"
     ]
   },
 
-  "testing_requirements": [
-    "test add turf",
-    "test search filter",
-    "test slot generation",
-    "test booking",
-    "test admin isolation"
+  "null_safety": [
+    "check widget.turf != null",
+    "check widget.turf.id != null",
+    "check selectedDate != null",
+    "use optional chaining everywhere"
   ],
 
-  "expected_result": [
-    "all buttons working",
-    "search working",
-    "filters working",
-    "slots visible",
-    "booking successful",
-    "images visible",
-    "admin panel functional"
+  "state_management": [
+    "set loading true before API",
+    "set loading false after API",
+    "update UI only if mounted == true"
+  ],
+
+  "backend_fixes": [
+    "ensure /bookings API returns correct data",
+    "include timeSlot in booking response",
+    "filter bookings by turfId and date"
+  ],
+
+  "debugging": [
+    "log API response",
+    "log request params",
+    "print errors clearly"
+  ],
+
+  "fallback_ui": [
+    "if no slots → show 'No slots available'",
+    "if error → show retry button"
+  ],
+
+  "final_result": [
+    "no red errors",
+    "slots load properly",
+    "UI stable",
+    "no crashes"
   ]
 }
