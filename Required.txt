@@ -1,137 +1,160 @@
 {
-  "project": "Turf Booking App - Safe Full Build with Existing Database",
+  "project": "Turf Booking Platform - Full Rebuild with Fresh Frontend",
 
-  "goal": "Build a complete turf booking application using existing MongoDB Atlas database WITHOUT disconnecting, modifying, or deleting existing data",
+  "goal": "Completely rebuild the frontend from scratch and build a full turf booking system with separate User App and Admin App while keeping backend and database safe",
 
-  "critical_rules": {
-    "do_not_disconnect_database": true,
-    "use_existing_connection_string": true,
-    "do_not_delete_or_drop_collections": true,
-    "do_not_modify_existing_documents": true,
-    "only_add_new_fields_if_required": true,
-    "system_must_work_with_existing_data": true
-  },
-
-  "database_strategy": {
-    "mode": "read_and_extend",
-    "rules": [
-      "reuse existing collections",
-      "add optional fields only",
-      "create new collections for new features",
-      "no schema breaking changes"
+  "critical_instruction": {
+    "delete_existing_frontend": true,
+    "instruction": [
+      "completely remove existing frontend codebase",
+      "do not reuse any UI components or old frontend logic",
+      "build brand new frontend from scratch",
+      "ensure no dependency on old frontend files"
     ]
   },
 
-  "existing_collections_support": [
-    "users",
-    "admins",
-    "turfs",
-    "bookings"
-  ],
+  "architecture": {
+    "frontend_apps": [
+      {
+        "name": "User App",
+        "build_from_scratch": true,
+        "description": "Customer booking application"
+      },
+      {
+        "name": "Admin App",
+        "build_from_scratch": true,
+        "description": "Turf owner dashboard"
+      }
+    ],
+    "backend": "Node.js + Express (reuse or extend safely)",
+    "database": "MongoDB Atlas (must remain unchanged)"
+  },
 
-  "new_collections_to_create": [
-    "payments",
-    "reviews",
-    "notifications",
-    "amenities",
-    "turf_amenities",
-    "pricing_rules"
-  ],
+  "database_rules": {
+    "do_not_disconnect": true,
+    "do_not_delete_data": true,
+    "do_not_modify_existing_documents": true,
+    "only_extend_schema": true
+  },
 
-  "multi_admin_system": {
-    "requirement": "data isolation per admin",
+  "authentication": {
+    "method": "JWT",
+    "roles": ["user", "admin"],
+    "requirements": [
+      "separate login screens",
+      "role-based access",
+      "secure admin routes"
+    ]
+  },
+
+  "multi_admin_logic": {
+    "requirement": "each admin can only access their own data",
     "implementation": [
-      "ensure turf has owner_id",
-      "filter all turfs by owner_id",
+      "add owner_id in turf",
+      "filter turfs by owner_id",
       "filter bookings by owner_id",
       "filter payments by owner_id"
     ]
   },
 
-  "search_filter_system": {
-    "filters": [
-      "district",
-      "place",
-      "price_min",
-      "price_max"
-    ],
-    "requirement": "dynamic filtering without affecting existing queries"
-  },
+  "user_app_features": [
+    "signup_login",
+    "logout",
+    "search_turfs",
+    "filter_by_district",
+    "filter_by_place",
+    "filter_by_price",
+    "view_turf_details",
+    "amenities_display",
+    "ratings_reviews",
+    "slot_selection",
+    "booking",
+    "razorpay_payment",
+    "booking_history",
+    "reschedule",
+    "notifications"
+  ],
 
-  "commission_model": {
+  "admin_app_features": [
+    "admin_login",
+    "logout",
+    "create_turf",
+    "edit_turf",
+    "add_location (district, place)",
+    "add_amenities",
+    "slot_management",
+    "dynamic_pricing",
+    "view_bookings",
+    "earnings_dashboard",
+    "commission_tracking"
+  ],
+
+  "commission_system": {
     "percentage": 5,
-    "rules": [
-      "do not modify stored turf price",
-      "calculate commission at runtime",
-      "store final_price separately"
+    "logic": [
+      "base price set by admin",
+      "commission added dynamically",
+      "final price shown to user",
+      "store all values separately"
     ]
   },
 
-  "payment_system": {
+  "payment": {
     "gateway": "Razorpay",
-    "rules": [
-      "use test mode first",
-      "do not block booking if payment fails",
-      "store payment details separately"
+    "flow": [
+      "create booking",
+      "generate order",
+      "user payment",
+      "verify payment",
+      "confirm booking"
     ]
   },
 
-  "backend_requirements": {
-    "architecture": "modular (routes, controllers, services, models)",
-    "features": [
-      "JWT authentication",
-      "role-based admin access",
-      "secure APIs",
-      "error handling",
-      "logging"
-    ]
-  },
+  "collections": [
+    "users",
+    "admins",
+    "turfs",
+    "bookings",
+    "payments",
+    "reviews",
+    "amenities",
+    "notifications"
+  ],
 
   "frontend_requirements": {
-    "rules": [
-      "do not break existing UI",
-      "add new components only",
-      "hide feature if API fails"
+    "design": "modern sports UI",
+    "user_app": [
+      "home with filters",
+      "turf listing",
+      "detail screen",
+      "booking flow",
+      "payment UI"
     ],
-    "features": [
-      "search by district and place",
-      "price filter",
-      "turf details with amenities",
-      "reviews UI",
-      "payment screen",
-      "admin dashboard",
-      "logout button"
+    "admin_app": [
+      "dashboard",
+      "turf management",
+      "bookings table",
+      "earnings chart"
     ]
   },
 
-  "logout_system": {
-    "implementation": [
-      "clear JWT token",
-      "invalidate session",
-      "redirect to login screen"
-    ]
-  },
-
-  "safety_features": {
-    "fallback_mode": true,
-    "feature_flags": true,
-    "non_blocking_errors": true
+  "security": {
+    "jwt_auth": true,
+    "role_based_access": true,
+    "admin_data_isolation": true
   },
 
   "deployment": {
-    "safe_deploy": true,
-    "no_downtime": true,
-    "use_env_variables": true
+    "production_ready": true,
+    "env_config": true
   },
 
   "expected_output": [
-    "full backend code",
-    "full frontend UI",
-    "mongodb integration",
-    "safe data handling",
-    "filter system",
-    "admin isolation",
-    "payment integration",
-    "setup guide"
+    "old frontend removed",
+    "new user app",
+    "new admin app",
+    "backend integration",
+    "mongodb safe usage",
+    "complete working system"
   ]
 }
