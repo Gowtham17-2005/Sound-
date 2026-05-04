@@ -1,192 +1,161 @@
 {
-  "project": "Next-Generation Turf Booking Super App",
+  "project": "Turf Booking App - Complete Fix and Functional Upgrade",
 
-  "goal": "Build a fully modern, visually stunning, production-ready turf booking platform using Flutter (Dart) for frontend and Node.js backend, with unique features not commonly available in the market",
+  "goal": "Fix all non-working UI elements, broken APIs, filters, slot system, and admin features to ensure fully working end-to-end turf booking system",
 
-  "architecture": {
-    "frontend": [
-      {
-        "name": "User App",
-        "tech": "Flutter (Dart)",
-        "build_from_scratch": true
-      },
-      {
-        "name": "Admin App",
-        "tech": "Flutter (Dart)",
-        "build_from_scratch": true
-      }
+  "critical_fix_rules": [
+    "ensure all frontend buttons are connected to backend APIs",
+    "fix all broken event handlers",
+    "ensure API calls are properly implemented",
+    "handle loading and error states",
+    "no dummy UI - everything must be functional"
+  ],
+
+  "frontend_fixes": {
+    "buttons": [
+      "fix add turf button click",
+      "fix all icons click actions",
+      "connect buttons to APIs"
     ],
-    "backend": "Node.js + Express",
-    "database": "MongoDB Atlas (existing database, do not modify or delete data)"
-  },
-
-  "critical_rules": {
-    "delete_existing_frontend": true,
-    "build_new_ui_from_zero": true,
-    "do_not_touch_existing_database_data": true,
-    "only_extend_schema_if_needed": true,
-    "separate_user_and_admin_apps": true
-  },
-
-  "design_system": {
-    "ui_style": "premium sports + glassmorphism + neumorphism hybrid",
-    "theme": [
-      "dark mode default",
-      "neon sports accent colors",
-      "gradient backgrounds",
-      "glass cards",
-      "rounded edges (20px+)",
-      "soft shadows"
-    ],
-    "color_palette": {
-      "primary": "#0F172A",
-      "secondary": "#1E293B",
-      "accent": "#22C55E",
-      "highlight": "#38BDF8",
-      "warning": "#F59E0B"
+    "search": {
+      "fix search by district",
+      "fix search by place",
+      "trigger API on search input change"
     },
-    "ui_features": [
-      "smooth animations",
-      "hero transitions",
-      "skeleton loaders",
-      "micro-interactions",
-      "floating action buttons",
-      "bottom navigation with blur effect"
+    "filters": {
+      "fix filter UI to actually filter data",
+      "connect price filter to backend",
+      "update turf list dynamically"
+    },
+    "ui_data_binding": [
+      "ensure turf list loads from backend",
+      "show turf name, location, price",
+      "display turf image properly",
+      "display ratings"
     ]
   },
 
-  "authentication": {
-    "type": "JWT",
-    "roles": ["user", "admin"],
-    "features": [
-      "separate login/signup",
-      "secure token storage",
-      "auto login",
-      "logout with token clear"
-    ]
-  },
-
-  "user_app_features": [
-    "modern home screen with search",
-    "search by district, place",
-    "price filter slider",
-    "map-based turf discovery",
-    "turf cards with rating and price",
-    "turf detail screen with images, amenities, reviews",
-    "AI recommended turfs",
-    "slot selection UI",
-    "real-time availability",
-    "booking system",
-    "razorpay payment integration",
-    "wallet system",
-    "booking history",
-    "reschedule booking",
-    "favorite turfs",
-    "notifications",
-    "dark/light toggle"
-  ],
-
-  "admin_app_features": [
-    "admin dashboard with analytics",
-    "add/edit turf",
-    "location setup (district/place)",
-    "upload turf images",
-    "amenities management",
-    "slot management",
-    "dynamic pricing rules",
-    "view bookings table",
-    "earnings dashboard with charts",
-    "commission tracking",
-    "user insights"
-  ],
-
-  "multi_admin_system": {
-    "logic": [
-      "each turf must have owner_id",
-      "admins can only access their data",
-      "secure backend filtering"
-    ]
-  },
-
-  "commission_model": {
-    "percentage": 5,
-    "logic": [
-      "base price set by admin",
-      "platform adds commission dynamically",
-      "final price shown to user",
-      "store base_price, commission_amount, final_price"
-    ]
-  },
-
-  "advanced_features": [
-    "AI slot suggestion",
-    "instant rebooking",
-    "group booking with split payment",
-    "nearby players feature",
-    "matchmaking system",
-    "tournament creation",
-    "live chat between players",
-    "rating-based ranking system"
-  ],
-
-  "payment": {
-    "gateway": "Razorpay",
-    "flow": [
-      "create booking",
-      "create order",
-      "user pays",
-      "verify payment",
-      "confirm booking"
-    ]
-  },
-
-  "database": {
-    "rules": [
-      "reuse existing collections",
-      "add new collections only if needed",
-      "no data deletion"
+  "backend_fixes": {
+    "api_validation": [
+      "ensure all routes return correct data",
+      "fix missing controllers",
+      "fix improper queries"
     ],
-    "collections": [
-      "users",
-      "admins",
-      "turfs",
-      "bookings",
-      "payments",
-      "reviews",
-      "amenities",
-      "notifications",
-      "pricing_rules"
+    "search_filter_api": {
+      "endpoint": "/turfs/filter",
+      "logic": [
+        "filter by district",
+        "filter by place",
+        "filter by price range"
+      ]
+    }
+  },
+
+  "slot_generation_system": {
+    "requirement": "auto generate slots based on opening and closing time",
+    "logic": [
+      "admin enters opening_time (e.g., 6:00 AM)",
+      "admin enters closing_time (e.g., 10:00 PM)",
+      "generate 1-hour slots automatically",
+      "store slots in database"
+    ],
+    "example": [
+      "6-7 AM",
+      "7-8 AM",
+      "8-9 AM"
     ]
   },
 
-  "backend_features": [
-    "modular architecture",
-    "secure APIs",
-    "JWT middleware",
-    "error handling",
-    "logging system"
+  "booking_system_fix": [
+    "ensure slots are fetched and displayed",
+    "disable already booked slots",
+    "allow user to select slot",
+    "confirm booking after payment"
   ],
 
-  "performance": {
-    "fast_loading": true,
-    "lazy_loading": true,
-    "optimized_queries": true
+  "turf_creation_fix": {
+    "requirement": "add turf must work properly",
+    "fields": [
+      "turf name",
+      "district",
+      "place",
+      "price",
+      "opening time",
+      "closing time",
+      "image upload"
+    ],
+    "after_submit": [
+      "save turf",
+      "auto generate slots",
+      "show in user app"
+    ]
   },
 
-  "deployment": {
-    "ready_for_production": true,
-    "environment_variables": true,
-    "scalable_setup": true
+  "image_upload": {
+    "requirement": "turf images must display to users",
+    "implementation": [
+      "use cloud storage or base64",
+      "store image URL in DB",
+      "display image in UI"
+    ]
   },
 
-  "expected_output": [
-    "two Flutter apps (user + admin)",
-    "modern UI with animations",
-    "Node.js backend",
-    "MongoDB integration",
-    "JWT authentication",
-    "Razorpay integration",
-    "admin analytics dashboard",
-    "complete setup guide"
+  "admin_fixes": [
+    "fix add turf action",
+    "fix slot generation",
+    "fix booking view",
+    "fix earnings calculation"
+  ],
+
+  "user_side_fixes": [
+    "load turf list correctly",
+    "enable search and filters",
+    "show turf details page",
+    "display slots properly",
+    "enable booking flow"
+  ],
+
+  "data_binding": {
+    "rule": "every UI element must show real backend data",
+    "no_static_data": true
+  },
+
+  "error_handling": [
+    "show error message if API fails",
+    "handle empty results",
+    "show loading indicator"
+  ],
+
+  "multi_admin_fix": {
+    "rule": "admin must see only their own turfs",
+    "implementation": [
+      "filter by owner_id in all queries"
+    ]
+  },
+
+  "commission_system": {
+    "percentage": 5,
+    "fix": [
+      "calculate dynamically",
+      "show final price to user"
+    ]
+  },
+
+  "testing_requirements": [
+    "test add turf",
+    "test search filter",
+    "test slot generation",
+    "test booking",
+    "test admin isolation"
+  ],
+
+  "expected_result": [
+    "all buttons working",
+    "search working",
+    "filters working",
+    "slots visible",
+    "booking successful",
+    "images visible",
+    "admin panel functional"
   ]
 }
