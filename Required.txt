@@ -1,118 +1,137 @@
 {
-  "task": "Fix multi-admin data isolation and revenue calculation in Turf Booking App",
+  "project": "Turf Booking App - Safe Full Build with Existing Database",
 
-  "goal": [
-    "Each admin should see ONLY their own turfs",
-    "Each admin should see ONLY their own bookings",
-    "Each admin should see their own revenue (commission-based)",
-    "No admin should access another admin's data"
-  ],
+  "goal": "Build a complete turf booking application using existing MongoDB Atlas database WITHOUT disconnecting, modifying, or deleting existing data",
 
-  "existing_problem": [
-    "All turfs are visible to every admin after login",
-    "No owner/admin mapping in turf data",
-    "Revenue is not calculated per admin"
-  ],
-
-  "constraints": {
-    "do_not_break_existing_app": true,
-    "do_not_modify_existing_logic_directly": true,
-    "only_add_safe_fields_and_filters": true
+  "critical_rules": {
+    "do_not_disconnect_database": true,
+    "use_existing_connection_string": true,
+    "do_not_delete_or_drop_collections": true,
+    "do_not_modify_existing_documents": true,
+    "only_add_new_fields_if_required": true,
+    "system_must_work_with_existing_data": true
   },
 
-  "database_changes": {
-    "turfs_collection": {
-      "add_field": "owner_id (ObjectId referencing admin user)"
-    },
-    "bookings_collection": {
-      "add_field": "owner_id (copy from turf owner)"
-    },
-    "payments_collection": {
-      "ensure_field": "owner_id"
-    }
-  },
-
-  "backend_changes": [
-    {
-      "task": "Attach owner_id when creating turf",
-      "logic": "owner_id = logged-in admin id"
-    },
-    {
-      "task": "Filter turfs by logged-in admin",
-      "code_example": "Turf.find({ owner_id: req.admin.id })"
-    },
-    {
-      "task": "Filter bookings by admin",
-      "code_example": "Bookings.find({ owner_id: req.admin.id })"
-    },
-    {
-      "task": "Attach owner_id during booking creation",
-      "logic": "copy owner_id from turf to booking"
-    },
-    {
-      "task": "Filter payments by admin",
-      "code_example": "Payments.find({ owner_id: req.admin.id })"
-    }
-  ],
-
-  "authentication": {
-    "requirement": "Use JWT or session-based login",
-    "store": [
-      "admin_id",
-      "admin_name"
-    ],
-    "middleware": "Attach admin data to request (req.admin)"
-  },
-
-  "revenue_calculation": {
-    "type": "commission_based",
-    "logic": [
-      "Each booking has commission_amount",
-      "Sum commission_amount for logged-in admin only"
-    ],
-    "aggregation_example": [
-      {
-        "$match": {
-          "owner_id": "req.admin.id",
-          "status": "paid"
-        }
-      },
-      {
-        "$group": {
-          "_id": null,
-          "total_revenue": { "$sum": "$commission_amount" },
-          "total_bookings": { "$sum": 1 }
-        }
-      }
+  "database_strategy": {
+    "mode": "read_and_extend",
+    "rules": [
+      "reuse existing collections",
+      "add optional fields only",
+      "create new collections for new features",
+      "no schema breaking changes"
     ]
   },
 
-  "frontend_changes": [
-    "Display admin name after login",
-    "Show only filtered turfs (API handled)",
-    "Add admin revenue dashboard",
-    "Show total earnings and booking count"
+  "existing_collections_support": [
+    "users",
+    "admins",
+    "turfs",
+    "bookings"
   ],
 
-  "security_rules": [
-    "Never return data without owner_id filter",
-    "Every API must validate logged-in admin",
-    "Prevent cross-admin data access"
+  "new_collections_to_create": [
+    "payments",
+    "reviews",
+    "notifications",
+    "amenities",
+    "turf_amenities",
+    "pricing_rules"
   ],
 
-  "migration_plan": [
-    "Add owner_id field to turfs",
-    "Update existing turfs with correct owner_id",
-    "Propagate owner_id to bookings and payments",
-    "Deploy backend filters",
-    "Test with multiple admin accounts"
-  ],
+  "multi_admin_system": {
+    "requirement": "data isolation per admin",
+    "implementation": [
+      "ensure turf has owner_id",
+      "filter all turfs by owner_id",
+      "filter bookings by owner_id",
+      "filter payments by owner_id"
+    ]
+  },
+
+  "search_filter_system": {
+    "filters": [
+      "district",
+      "place",
+      "price_min",
+      "price_max"
+    ],
+    "requirement": "dynamic filtering without affecting existing queries"
+  },
+
+  "commission_model": {
+    "percentage": 5,
+    "rules": [
+      "do not modify stored turf price",
+      "calculate commission at runtime",
+      "store final_price separately"
+    ]
+  },
+
+  "payment_system": {
+    "gateway": "Razorpay",
+    "rules": [
+      "use test mode first",
+      "do not block booking if payment fails",
+      "store payment details separately"
+    ]
+  },
+
+  "backend_requirements": {
+    "architecture": "modular (routes, controllers, services, models)",
+    "features": [
+      "JWT authentication",
+      "role-based admin access",
+      "secure APIs",
+      "error handling",
+      "logging"
+    ]
+  },
+
+  "frontend_requirements": {
+    "rules": [
+      "do not break existing UI",
+      "add new components only",
+      "hide feature if API fails"
+    ],
+    "features": [
+      "search by district and place",
+      "price filter",
+      "turf details with amenities",
+      "reviews UI",
+      "payment screen",
+      "admin dashboard",
+      "logout button"
+    ]
+  },
+
+  "logout_system": {
+    "implementation": [
+      "clear JWT token",
+      "invalidate session",
+      "redirect to login screen"
+    ]
+  },
+
+  "safety_features": {
+    "fallback_mode": true,
+    "feature_flags": true,
+    "non_blocking_errors": true
+  },
+
+  "deployment": {
+    "safe_deploy": true,
+    "no_downtime": true,
+    "use_env_variables": true
+  },
 
   "expected_output": [
-    "updated mongoose schemas",
-    "secure API routes",
-    "JWT middleware",
-    "aggregation queries for revenue",
-    "frontend dashboard integration"
+    "full backend code",
+    "full frontend UI",
+    "mongodb integration",
+    "safe data handling",
+    "filter system",
+    "admin isolation",
+    "payment integration",
+    "setup guide"
   ]
 }
