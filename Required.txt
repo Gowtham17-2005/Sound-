@@ -1,102 +1,183 @@
 {
-  "task": "upgrade_admin_and_booking_features",
-  "instructions": {
-    "important": [
-      "Do not rebuild the app",
-      "Fix existing issues and extend features",
-      "Keep current system and database intact"
+  "project": "Turf Booking App Full Upgrade",
+  "goal": "Upgrade existing Turf Booking App to full production-ready system including frontend, backend, and database WITHOUT breaking existing app or data",
+
+  "environment": {
+    "frontend": "mobile_or_web_app",
+    "backend": "Node.js + Express",
+    "database": "MongoDB Atlas"
+  },
+
+  "strict_rules": {
+    "do_not_modify_existing_code": true,
+    "do_not_modify_existing_ui": true,
+    "do_not_modify_existing_collections": true,
+    "do_not_modify_existing_apis": true,
+    "only_add_new_features_as_extensions": true,
+    "backward_compatibility_required": true,
+    "zero_downtime": true
+  },
+
+  "architecture": {
+    "pattern": "parallel_extension_architecture",
+    "backend": "modular (routes, controllers, services, models)",
+    "frontend": "component_based",
+    "api_strategy": "create_new_v2_endpoints_only"
+  },
+
+  "existing_features": {
+    "user": [
+      "login_signup",
+      "turf_search_basic",
+      "slot_booking",
+      "my_bookings_basic"
+    ],
+    "admin": [
+      "admin_login",
+      "turf_management_basic",
+      "slot_management_basic",
+      "booking_management"
     ]
   },
 
-  "admin_panel_fixes": {
-    "turf_save": {
-      "issue": "turf save option not working",
-      "fix": "ensure save API is connected and data is stored correctly in database"
+  "new_backend_features": [
+    {
+      "name": "payments",
+      "collection": "payments",
+      "fields": ["booking_id", "amount", "status", "method", "created_at"],
+      "api": ["/api/v2/payments/create"],
+      "logic": "create payment after booking, do not block booking flow"
     },
-
-    "time_format": {
-      "requirement": "use 12-hour format with AM/PM",
-      "example": "6:00 AM to 10:00 PM",
-      "remove_24hr_format": true
+    {
+      "name": "amenities",
+      "collections": ["amenities", "turf_amenities"],
+      "api": ["/api/v2/turfs/:id/amenities"],
+      "logic": "map amenities to turf and fetch dynamically"
     },
-
-    "image_upload": {
-      "add_feature": true,
-      "requirement": [
-        "add image picker option",
-        "upload turf images to server or cloud storage",
-        "store image URL in database",
-        "display uploaded images in user app automatically"
-      ]
+    {
+      "name": "reviews",
+      "collection": "reviews",
+      "api": [
+        "/api/v2/reviews/add",
+        "/api/v2/turfs/:id/reviews"
+      ],
+      "logic": "store rating and calculate average"
     },
-
-    "location_update": {
-      "google_maps": true,
-      "features": [
-        "allow admin to select exact turf location using map",
-        "store latitude and longitude",
-        "show exact location in user view using map"
-      ]
+    {
+      "name": "reschedule",
+      "collection_update": "bookings (add optional fields)",
+      "api": ["/api/v2/bookings/reschedule"],
+      "logic": "allow reschedule without modifying original booking"
     },
-
-    "multi_admin_security": {
-      "requirement": [
-        "each admin should see only their own turf",
-        "do not show other admin turf data",
-        "filter data using owner/admin ID"
-      ]
+    {
+      "name": "notifications",
+      "collection": "notifications",
+      "api": ["/api/v2/notifications"],
+      "logic": "event-based notifications"
+    },
+    {
+      "name": "dynamic_pricing",
+      "collection": "pricing_rules",
+      "api": ["/api/v2/admin/pricing-rules"],
+      "logic": "apply price at runtime"
+    },
+    {
+      "name": "earnings",
+      "api": ["/api/v2/admin/earnings"],
+      "logic": "calculate revenue using payments collection"
     }
-  },
+  ],
 
-  "booking_management": {
-    "admin_control": {
-      "add_feature": true,
-      "options": [
-        "approve booking",
-        "reject booking"
-      ]
+  "new_frontend_features": [
+    {
+      "feature": "amenities_ui",
+      "screen": "turf_detail",
+      "ui": "show icons and labels for amenities"
     },
-
-    "user_details": {
-      "requirement": [
-        "show user name",
-        "show phone number",
-        "show booking time and date"
-      ]
-    }
-  },
-
-  "slot_system": {
-    "auto_generation": {
-      "based_on": "opening_time and closing_time",
-      "format": "12-hour AM/PM",
-      "interval": "1 hour"
+    {
+      "feature": "reviews_ui",
+      "screen": "turf_detail",
+      "ui": "rating display + review list + add review form"
     },
-    "status_colors": {
-      "available": "green",
-      "booked": "red"
-    }
-  },
-
-  "user_app_updates": {
-    "location_display": {
-      "requirement": "show turf exact location using map"
+    {
+      "feature": "payment_flow",
+      "screen": "after_slot_selection",
+      "ui": "payment screen with success/failure handling"
     },
-    "image_display": {
-      "requirement": "show admin uploaded turf images"
+    {
+      "feature": "reschedule_button",
+      "screen": "my_bookings",
+      "ui": "reschedule option with slot picker"
+    },
+    {
+      "feature": "notifications_ui",
+      "screen": "global_header",
+      "ui": "notification icon + list screen"
+    },
+    {
+      "feature": "admin_amenities",
+      "screen": "admin_turf_management",
+      "ui": "multi-select amenities input"
+    },
+    {
+      "feature": "admin_pricing",
+      "screen": "admin_slot_management",
+      "ui": "set weekday/weekend pricing"
+    },
+    {
+      "feature": "admin_dashboard",
+      "screen": "admin_panel",
+      "ui": "earnings dashboard with charts"
     }
+  ],
+
+  "database_plan": {
+    "new_collections": [
+      "payments",
+      "amenities",
+      "turf_amenities",
+      "reviews",
+      "notifications",
+      "pricing_rules"
+    ],
+    "safe_updates": [
+      "add optional fields to bookings: reschedule_count, rescheduled_from"
+    ]
   },
 
-  "performance_and_validation": {
-    "add_loading": true,
-    "error_handling": true,
-    "validate_inputs": true
+  "api_rules": {
+    "do_not_change_existing_apis": true,
+    "use_v2_routes": true,
+    "fallback_safe": true
   },
 
-  "output": {
-    "type": "modified_code_only",
-    "ensure_working": true
+  "frontend_rules": {
+    "do_not_modify_existing_screens": true,
+    "add_new_components_only": true,
+    "hide_feature_if_api_fails": true
   },
 
-  "goal": "Fix admin panel issues and upgrade turf booking system with image upload, map location, booking approval, and secure multi-admin system"
+  "safety": {
+    "feature_flags": true,
+    "fallback_mode": true,
+    "error_handling": "non-blocking"
+  },
+
+  "flow": {
+    "booking": [
+      "user selects slot",
+      "existing booking API runs",
+      "new payment API triggered",
+      "notification triggered"
+    ]
+  },
+
+  "expected_output": [
+    "complete backend code (Node.js + Express)",
+    "mongoose schemas",
+    "API routes (/v2)",
+    "frontend components/screens",
+    "API integration code",
+    "step-by-step setup guide"
+  ]
 }
